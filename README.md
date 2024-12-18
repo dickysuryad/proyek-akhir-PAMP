@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # proyek-akhir-PAMP
 =======
 # aplikasinotes
