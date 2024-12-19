@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "193892516782",
+    "firebase_url": "https://testreal-98ef2-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "testreal-98ef2",
+    "storage_bucket": "testreal-98ef2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:193892516782:android:e44053655669b497393e3f",
+        "android_client_info": {
+          "package_name": "com.example.real12"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCecsVbhV0zXj95uoI26kMr9PwDYvjTAoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:193892516782:android:af18b8f0b834d795393e3f",
+        "android_client_info": {
+          "package_name": "com.example.real22"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCecsVbhV0zXj95uoI26kMr9PwDYvjTAoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
