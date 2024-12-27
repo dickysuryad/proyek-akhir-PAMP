@@ -15,13 +15,13 @@ class Home extends StatefulWidget {
     await Auth().signOut();
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginRegisterPage()),
       (Route<dynamic> route) => false,
     );
   }
 
   Widget _title() {
-    return const Text('Firebase Auth');
+    return const Text('Settings');
   }
 
   Widget _userUid() {
@@ -43,7 +43,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final fb = FirebaseDatabase.instance;
   TextEditingController second = TextEditingController();
-
   TextEditingController third = TextEditingController();
   var l;
   var g;
@@ -231,7 +230,6 @@ class _HomeState extends State<Home> {
   upd() async {
     DatabaseReference ref1 = FirebaseDatabase.instance.ref("notes/$k");
 
-// Only update the name, leave the age and address!
     await ref1.update({
       "title": second.text,
       "subtitle": third.text,
@@ -239,4 +237,4 @@ class _HomeState extends State<Home> {
     second.clear();
     third.clear();
   }
-}
+} 

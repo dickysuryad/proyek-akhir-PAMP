@@ -1,90 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:real12/auth.dart';
 import 'package:real12/home_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
+class AuthProvider with ChangeNotifier {
   String? errorMessage = '';
   bool isLogin = true;
 
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  Future<void> signInWithEmailAndPassword() async {
+  Future<void> signInWithEmailAndPassword(BuildContext context) async {
     try {
       await Auth().signInwithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+        email: emailController.text,
+        password: passwordController.text,
       );
-      // Navigate to the HomePage after successful login
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Home()),
       );
     } on FirebaseAuthException catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Login failed: $errorMessage'),
-          backgroundColor: Colors.red,  // Red background for error
+          backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  Future<void> createUserWithEmailAndPassword() async {
+  Future<void> createUserWithEmailAndPassword(BuildContext context) async {
     try {
       await Auth().createUserwithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+        email: emailController.text,
+        password: passwordController.text,
       );
-      // Show a SnackBar when the account is successfully created
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Account successfully created!'),
+        const SnackBar(
+          content: Text('Account successfully created!'),
           backgroundColor: Colors.green,
         ),
       );
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-      // Show an error SnackBar if registration fails
+      errorMessage = e.message;
+      notifyListeners();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Registration failed: $errorMessage'),
-          backgroundColor: Colors.red,  // Red background for error
+          backgroundColor: Colors.red,
         ),
       );
     }
   }
 
+  void toggleLoginRegister() {
+    isLogin = !isLogin;
+    notifyListeners();
+  }
+}
+
+class LoginRegisterPage extends StatelessWidget {
+  const LoginRegisterPage({super.key});
+
   Widget _title() {
-    return const Text('Firebase Auth');
+    return const Text('Notes');
   }
 
-  Widget _entryField(
-    String title, 
-    TextEditingController controller
-  ) {
+  Widget _entryField(String title, TextEditingController controller) {
     return TextField(
       controller: controller,
-      obscureText: title == 'password', 
+      obscureText: title == 'password',
       decoration: InputDecoration(
         labelText: title,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
     );
   }
 
-  Widget _errorMessage() {
-    return errorMessage == null || errorMessage!.isEmpty
+  Widget _errorMessage(String? errorMessage) {
+    return errorMessage == null || errorMessage.isEmpty
         ? const SizedBox.shrink()
         : Text(
             'Error: $errorMessage',
@@ -92,27 +90,26 @@ class _LoginPageState extends State<LoginPage> {
           );
   }
 
-  Widget _submitButton() {
+  Widget _submitButton(AuthProvider provider, BuildContext context) {
     return ElevatedButton(
-      onPressed:
-          isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
-      child: Text(isLogin ? 'Login' : 'Register'),
+      onPressed: () => provider.isLogin
+          ? provider.signInWithEmailAndPassword(context)
+          : provider.createUserWithEmailAndPassword(context),
+      child: Text(provider.isLogin ? 'Login' : 'Register'),
     );
   }
 
-  Widget _loginOrRegisterButton() {
+  Widget _loginOrRegisterButton(AuthProvider provider) {
     return TextButton(
-      onPressed: () {
-        setState(() {
-          isLogin = !isLogin;
-        });
-      },
-      child: Text(isLogin ? 'Register instead' : 'Login instead'),
+      onPressed: provider.toggleLoginRegister,
+      child: Text(provider.isLogin ? 'Register instead' : 'Login instead'),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: _title(),
@@ -126,19 +123,45 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _entryField('email', _controllerEmail),
+              _entryField('email', authProvider.emailController),
               const SizedBox(height: 20),
-              _entryField('password', _controllerPassword),
+              _entryField('password', authProvider.passwordController),
               const SizedBox(height: 20),
-              _errorMessage(),
+              _errorMessage(authProvider.errorMessage),
               const SizedBox(height: 20),
-              _submitButton(),
+              _submitButton(authProvider, context),
               const SizedBox(height: 10),
-              _loginOrRegisterButton(),
+              _loginOrRegisterButton(authProvider),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const LoginRegisterPage(),
     );
   }
 }

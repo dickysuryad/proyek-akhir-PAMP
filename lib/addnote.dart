@@ -12,7 +12,6 @@ class addnote extends StatefulWidget {
 
 class _addnoteState extends State<addnote> {
   TextEditingController second = TextEditingController();
-
   TextEditingController third = TextEditingController();
 
   final fb = FirebaseDatabase.instance;

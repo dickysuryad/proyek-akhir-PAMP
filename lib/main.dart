@@ -20,9 +20,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "todo app",
-      theme: ThemeData(
-        primaryColor: Colors.greenAccent[700],
-      ),
       home: WidgetTree(),
       debugShowCheckedModeBanner: false,
     );
